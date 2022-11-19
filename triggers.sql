@@ -9,3 +9,28 @@
 -- Agregados por la correción
 -- 7. Checkear que los mails del codigo de fact y el medio de pago sean iguales
 -- 8. El registro en Venta para el caso de automóvil se debería asegurar que la cantidad = 1
+
+
+SET serveroutput ON;
+
+
+CREATE OR REPLACE TRIGGER VALIDAR_EDAD_USUARIO
+BEFORE INSERT OR UPDATE ON USUARIO
+FOR EACH ROW
+DECLARE
+    VEdad Number;
+BEGIN
+    VEdad := MONTHS_BETWEEN(SYSDATE, :NEW.fechaNacimiento)/12; 
+    IF VEdad < 18  THEN
+        DBMS_OUTPUT.PUT_LINE ('El usuario debe ser mayor de edad');
+        RAISE_APPLICATION_ERROR(-20001,'El usuario debe ser mayor de edad ' ||TO_CHAR(VEdad)|| ' años') ;
+    END IF;
+END;
+
+-- Test 
+INSERT INTO Usuario (email, nombre, apellido, fechaNacimiento, idMercado, fechaCreacion, telefonoRecuperarCuenta, emailRecuperarCuenta) VALUES ('nicolasandreoli2@gmail.com', 'Nicolás2', 'Andreoli2', TO_DATE('24/01/2020', 'dd/mm/yyyy'), 1, TO_DATE('24/01/2020', 'dd/mm/yyyy'), 0991234567, NULL);
+INSERT INTO Usuario (email, nombre, apellido, fechaNacimiento, idMercado, fechaCreacion, telefonoRecuperarCuenta, emailRecuperarCuenta) VALUES ('nicolasandreoli2@gmail.com', 'Nicolás2', 'Andreoli2', TO_DATE('24/12/2004', 'dd/mm/yyyy'), 1, TO_DATE('24/01/2020', 'dd/mm/yyyy'), 0991234567, NULL);
+
+UPDATE Usuario
+SET fechaNacimiento = TO_DATE('24/01/2008', 'dd/mm/yyyy')
+WHERE email='nicolasandreoli@gmail.com';
