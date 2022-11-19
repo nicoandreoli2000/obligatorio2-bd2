@@ -23,7 +23,7 @@ BEGIN
     VEdad := MONTHS_BETWEEN(SYSDATE, :NEW.fechaNacimiento)/12; 
     IF VEdad < 18  THEN
         DBMS_OUTPUT.PUT_LINE ('El usuario debe ser mayor de edad');
-        RAISE_APPLICATION_ERROR(-20001,'El usuario debe ser mayor de edad, actualmente posee ' ||TO_CHAR(VEdad)|| ' años') ;
+        RAISE_APPLICATION_ERROR(-20001,'El usuario debe ser mayor de edad, actualmente posee ' || TO_CHAR(VEdad) || ' años') ;
     END IF;
 END;
 
@@ -57,3 +57,13 @@ INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (7,
 UPDATE Factura
 SET codigoMedioPago = '123456'
 WHERE id=1;
+
+-- 3. Al realizar una venta de un producto se debe chequear que el mismo tenga stock suficiente 
+
+
+-- test
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 6, 500, null);
+
+
+
+-- 4. El atributo subtotal de la tabla Venta debe ser igual a la cantidad * precio del producto
