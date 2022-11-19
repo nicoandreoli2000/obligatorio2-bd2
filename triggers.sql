@@ -67,3 +67,69 @@ INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VAL
 
 
 -- 4. El atributo subtotal de la tabla Venta debe ser igual a la cantidad * precio del producto
+CREATE OR REPLACE TRIGGER VALIDAR_SUBTOTAL
+BEFORE INSERT OR UPDATE ON Venta
+FOR EACH ROW
+DECLARE
+    VProductoPrecio Producto.precio%TYPE;
+BEGIN
+    SELECT P.precio INTO VProductoPrecio 
+    FROM Producto P
+    WHERE :NEW.idProducto= P.id;
+    
+    IF :NEW.cantidad * VProductoPrecio != :NEW.subtotal THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Error en el calculo del subtotal. Precio del producto es: ' || TO_CHAR(VProductoPrecio)) ;
+    END IF;
+END;
+
+-- test
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 2, 150, null);
+
+UPDATE Venta
+SET subtotal = 700
+WHERE idFactura=3 and idProducto=2;
+
+
+
+-- 5. El numeroDeSerie de la tabla Venta debe ser nulo a menos que el producto con el que se relacione sea un automóvil.
+
+CREATE OR REPLACE TRIGGER VALIDAR_NUMERO_SERIE_AUTOMOVIL
+BEFORE INSERT OR UPDATE ON Venta
+FOR EACH ROW
+DECLARE
+    VEsAuto Number;
+BEGIN
+    SELECT COUNT(1) INTO VEsAuto 
+    FROM Producto P, Automovil A
+    WHERE :NEW.idProducto= P.id
+    AND P.id = A.id; 
+    
+    IF VEsAuto > 0 and :NEW.numeroDeSerie IS NULL THEN
+        RAISE_APPLICATION_ERROR(-20001, 'El automovil debe tener un numeros de serie'); 
+    
+    END IF;
+END;
+
+-- test
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 1, 1, 100, null);
+
+
+CREATE OR REPLACE TRIGGER VALIDAR_NUMERO_SERIE_NO_AUTOMOVIL
+BEFORE INSERT OR UPDATE ON Venta
+FOR EACH ROW
+DECLARE
+     VNoEsAuto Number;
+BEGIN
+    SELECT COUNT(1) INTO VNoEsAuto 
+    FROM Producto P, PanelSolar PS, Vestimenta V
+    WHERE :NEW.idProducto= P.id
+    AND (P.id = PS.id 
+    OR P.id = V.id);
+    
+    IF VNoEsAuto > 0 and :NEW.numeroDeSerie IS NOT NULL THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Las vestimentas o paneles solares no debe tener un numeros de serie') ;
+    END IF;
+END;
+
+-- test
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 1, 100, 50);
