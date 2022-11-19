@@ -10,6 +10,8 @@
 -- 7. Checkear que los mails del codigo de fact y el medio de pago sean iguales
 -- 8. El registro en Venta para el caso de automóvil se debería asegurar que la cantidad = 1
 
+--- DUDA: HAY QUE AGREGAR QEU EL TOTAL EN FACTURA SEA LA SUMA DE LOS SUBTOTALES??
+
 
 SET serveroutput ON;
 
@@ -133,3 +135,44 @@ END;
 
 -- test
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 1, 100, 50);
+
+
+-- 6. Solo un usuario que haya comprado un automóvil puede comprar vestimenta
+
+CREATE OR REPLACE TRIGGER USUARIO_PUEDE_COMPRAR_ROPA
+BEFORE INSERT OR UPDATE ON Venta
+FOR EACH ROW
+DECLARE
+     VEsVestimenta Number;
+     VEmailUsuarioDelaCompra Usuario.email%TYPE;
+     VPoseeAutomovil Number;
+BEGIN
+    SELECT COUNT(1) INTO VEsVestimenta 
+    FROM Producto P,  Vestimenta V
+    WHERE :NEW.idProducto= P.id
+    AND P.id = V.id;
+    
+    SELECT F.emailUsuario INTO VEmailUsuarioDelaCompra 
+    FROM Factura F
+    WHERE :NEW.idFactura= F.id;
+    
+    SELECT COUNT(1) INTO VPoseeAutomovil 
+    FROM Factura F, Venta V, Automovil A
+    WHERE F.emailUsuario = VEmailUsuarioDelaCompra
+    AND F.id = V.idFactura
+    AND V.idProducto = A.id;
+    
+    IF VEsVestimenta > 0 and VPoseeAutomovil = 0 THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Es necesario haber comprado un automovil para poder comprar ropa') ;
+    END IF;
+END;
+-- TEST
+INSERT INTO Usuario (email, nombre, apellido, fechaNacimiento, idMercado, fechaCreacion, telefonoRecuperarCuenta, emailRecuperarCuenta) VALUES ('andres@gmail.com', 'andres', 'María', TO_DATE('24/01/1950', 'dd/mm/yyyy'), 3, TO_DATE('24/01/2021', 'dd/mm/yyyy'), NULL, 'andres@gmail.com');
+INSERT INTO MedioPago (codigo, tipo, emailUsuario) VALUES ('123456789', 'CRYPTO', 'andres@gmail.com');
+INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (7, 500, TO_DATE('01/01/2022', 'dd/mm/yyyy'), 'andres@gmail.com', '123456789');
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (7, 3, 1, 100, null);
+
+-- Pasa
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (7, 1, 1, 100, 15);
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (7, 3, 1, 100, null);
+
