@@ -1,0 +1,3 @@
+-- Requerimiento 1
+-- Proveer un servicio que, dado un rango de fechas y un usuario, retorne la cantidad de compras realizadas por el
+-- usuario y el monto total para el periodo.

@@ -67,11 +67,13 @@ db.telemetria.drop();
 
 // Falla
 db.telemetria.insert({});
+
 db.telemetria.insert({
   fecha: new Date(),
   nSerie: "12345",
   temperatura: "125",
 });
+
 db.telemetria.insert({
   fecha: new Date(),
   nSerie: 12345,
@@ -83,6 +85,7 @@ db.telemetria.insert({
   velocidad: 120,
   ubicaciones: [{ latitud: 12.5, longitud: 15.2 }],
 });
+
 db.telemetria.insert({
   fecha: new Date(),
   nSerie: "12345",
@@ -94,6 +97,7 @@ db.telemetria.insert({
   velocidad: 120,
   ubicaciones: [{ latitud: 12.5, longitud2: 15.2 }],
 });
+
 db.telemetria.insert({
   fecha: new Date(),
   nSerie: "12345",
@@ -105,6 +109,7 @@ db.telemetria.insert({
   velocidad: 120,
   ubicaciones: [{ latitud: 12.5 }],
 });
+
 db.telemetria.insert({
   fecha: new Date(),
   nSerie: "12345",
@@ -119,6 +124,7 @@ db.telemetria.insert({
     { latitud: "12.5", longitud: 15.2 },
   ],
 });
+
 db.telemetria.insert({
   fecha: new Date(),
   nSerie: "12345",
@@ -130,6 +136,7 @@ db.telemetria.insert({
   velocidad: 120,
   ubicaciones: [{ latitud: 12.5, longitud: 15.2 }],
 });
+
 db.telemetria.insert({
   fecha: new Date(),
   nSerie: "12345",
@@ -141,6 +148,7 @@ db.telemetria.insert({
   velocidad: 120,
   ubicaciones: [{ latitud: 12.5, longitud: 15.2 }],
 });
+
 db.telemetria.insert({
   fecha: new Date(),
   nSerie: "12345",
@@ -169,6 +177,7 @@ db.telemetria.insert({
   velocidad: 120,
   ubicaciones: [],
 });
+
 db.telemetria.insert({
   fecha: new Date(),
   nSerie: "12345",
@@ -180,6 +189,7 @@ db.telemetria.insert({
   velocidad: 120,
   ubicaciones: [{ latitud: 12.5, longitud: 15.2 }],
 });
+
 db.telemetria.insert({
   fecha: new Date(),
   nSerie: "12345",
@@ -212,7 +222,7 @@ db.telemetria.insert({
   fecha: new Date(),
   nSerie: "123456",
   modelo: "Tesla 2",
-  temperatura: 125,
+  temperatura: 100,
   vibracion: "rojo",
   presion: "baja",
   voltaje: 12,
@@ -232,3 +242,9 @@ db.telemetria.find({ nSerie: "12345" });
 
 // Requerimiento 5
 // Proveer una consulta que retorne, para cada modelo, el promedio de temperatura, en orden decreciente.
+db.telemetria.aggregate([
+    {"$group":  { _id : '$modelo',
+                avgTemperatura: { $avg: "$temperatura" } } 
+    },
+    { $sort : { avgTemperatura : -1 }}
+])
