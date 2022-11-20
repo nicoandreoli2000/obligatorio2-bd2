@@ -61,7 +61,20 @@ SET codigoMedioPago = '123456'
 WHERE id=1;
 
 -- 3. Al realizar una venta de un producto se debe chequear que el mismo tenga stock suficiente 
-
+CREATE OR REPLACE TRIGGER VALIDAR_STOCK
+BEFORE INSERT OR UPDATE ON Venta
+FOR EACH ROW
+DECLARE
+    VProductoStock Producto.stock%TYPE;
+    VNombreProducto Producto.nombre%TYPE;
+BEGIN
+    SELECT P.stock, P.nombre INTO VProductoStock, VNombreProducto 
+    FROM Producto P
+    WHERE :NEW.idProducto = P.id;
+    IF VProductoStock < :NEW.cantidad  THEN
+        RAISE_APPLICATION_ERROR(-20001, 'No hay suficiente stock del producto ' || TO_CHAR(VNombreProducto) ||' El stock actual es de ' || TO_CHAR(VProductoStock)) ;
+    END IF;
+END;
 
 -- test
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 6, 500, null);
