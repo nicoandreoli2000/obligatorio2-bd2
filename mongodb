@@ -55,7 +55,12 @@ db.telemetria.drop()
 // Falla
 db.telemetria.insert({})
 db.telemetria.insert({fecha: new Date(), nSerie: "12345", temperatura: "125" })
+db.telemetria.insert({fecha: new Date(), nSerie: 12345, temperatura: 125, vibracion: "rojo", presion: "baja",  voltaje: 12, velocidad: 120, ubicaciones: [{latitud: 12.5, longitud: 15.2}]})
+db.telemetria.insert({fecha: new Date(), nSerie: "12345", temperatura: 125, vibracion: "rojo", presion: "baja",  voltaje: 12, velocidad: 120, ubicaciones: [{latitud: 12.5, longitud2: 15.2}]})
+db.telemetria.insert({fecha: new Date(), nSerie: "12345", temperatura: 125, vibracion: "rojo", presion: "baja",  voltaje: 12, velocidad: 120, ubicaciones: [{latitud: 12.5}]})
+db.telemetria.insert({fecha: new Date(), nSerie: "12345", temperatura: 125, vibracion: "rojo", presion: "baja",  voltaje: 12, velocidad: 120, ubicaciones: [{latitud: 12.5, longitud: 15.2}, {latitud: "12.5", longitud: 15.2}]})
 db.telemetria.insert({fecha: new Date(), nSerie: "12345", temperatura: 125, vibracion: "rojo", presion: "baja2",  voltaje: 12, velocidad: 120, ubicaciones: [{latitud: 12.5, longitud: 15.2}]})
+db.telemetria.insert({fecha: new Date(), nSerie: "12345", temperatura: 125, vibracion: "rojo2", presion: "baja",  voltaje: 12, velocidad: 120, ubicaciones: [{latitud: 12.5, longitud: 15.2}]})
 db.telemetria.insert({fecha: new Date(), nSerie: "12345", temperatura: 125, vibracion: "rojo", presion: "baja",  voltaje: 12, velocidad: 120, ubicaciones: [{latitud: 12.5, longitud: 15.2}, {latitud: 15.5}, {latitud: "125", longitud: 18.2}]})
 
 // anda:
@@ -64,42 +69,15 @@ db.telemetria.insert({fecha: new Date(), nSerie: "12345", temperatura: 125, vibr
 db.telemetria.insert({fecha: new Date(), nSerie: "12345", temperatura: 125, vibracion: "rojo", presion: "baja",  voltaje: 12, velocidad: 120, ubicaciones: [{latitud: 12.5, longitud: 15.2}, {latitud: 12.5, longitud: 15.2}, {latitud: 12.5, longitud: 15.2}]})
 
 
+db.telemetria.insert({fecha: new Date(), nSerie: "12345",  temperatura: 125, vibracion: "rojo", presion: "baja",  voltaje: 12, velocidad: 120, ubicaciones: []})
 
-db.createCollection("telemetria", {
-    validator: {
-       $jsonSchema: {
-            required: [ "fecha" ],
-            bsonType: "object",
-            properties: {
-                fecha: {
-                    bsonType: "Date",
-                    description: "must be a string"
-                },
-                apellido: {
-                    bsonType: "string",
-                    description: "must be a string"
-                }
-            }
-        }
-    }
-})
+db.telemetria.insert({fecha: new Date(), nSerie: "123456", temperatura: 125, vibracion: "rojo", presion: "baja",  voltaje: 12, velocidad: 120, ubicaciones: [{latitud: 12.5, longitud: 15.2}, {latitud: 12.5, longitud: 15.2}, {latitud: 12.5, longitud: 15.2}]})
 
+// Requerimiento 4
+// Proveer una consulta que, dado el número de serie de un vehículo, retorne el historial de las mediciones.
 
-db.createCollection("telemetria", {
-    validator: {
-       $jsonSchema: {
-            required: [ "nombre" ],
-            bsonType: "object",
-            properties: {
-                nombre: {
-                    bsonType: "string",
-                    description: "must be a string"
-                },
-                apellido: {
-                    bsonType: "string",
-                    description: "must be a string"
-                }
-            }
-        }
-    }
-})
+db.telemetria.find({nSerie: "12345"})
+// El numero de serie elegido para el vehiculo fue 12345
+
+// Requerimiento 5
+// Proveer una consulta que retorne, para cada modelo, el promedio de temperatura, en orden decreciente.
