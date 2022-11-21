@@ -18,9 +18,7 @@ END;
 INSERT INTO Usuario (email, nombre, apellido, fechaNacimiento, idMercado, fechaCreacion, telefonoRecuperarCuenta, emailRecuperarCuenta) VALUES ('nicolasandreoli2@gmail.com', 'Nicolás2', 'Andreoli2', TO_DATE('24/01/2020', 'dd/mm/yyyy'), 1, TO_DATE('24/01/2020', 'dd/mm/yyyy'), 0991234567, NULL);
 INSERT INTO Usuario (email, nombre, apellido, fechaNacimiento, idMercado, fechaCreacion, telefonoRecuperarCuenta, emailRecuperarCuenta) VALUES ('nicolasandreoli2@gmail.com', 'Nicolás2', 'Andreoli2', TO_DATE('24/12/2004', 'dd/mm/yyyy'), 1, TO_DATE('24/01/2020', 'dd/mm/yyyy'), 0991234567, NULL);
 
-UPDATE Usuario
-SET fechaNacimiento = TO_DATE('24/01/2008', 'dd/mm/yyyy')
-WHERE email='nicolasandreoli@gmail.com';
+UPDATE Usuario SET fechaNacimiento = TO_DATE('24/01/2008', 'dd/mm/yyyy') WHERE email='nicolasandreoli@gmail.com';
 
 -- 2. La factura debe tener el mismo codigoMedioPago que el de usuario que se relaciona con la factura
 
@@ -41,9 +39,7 @@ END;
 -- Test
 INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (7, 700, TO_DATE('17/10/2021', 'dd/mm/yyyy'), 'josemaria@gmail.com', '123456');
 
-UPDATE Factura
-SET codigoMedioPago = '123456'
-WHERE id=1;
+UPDATE Factura SET codigoMedioPago = '123456' WHERE id=1;
 
 -- 3. Al realizar una venta de un producto se debe chequear que el mismo tenga stock suficiente 
 CREATE OR REPLACE TRIGGER VALIDAR_STOCK
@@ -84,9 +80,7 @@ END;
 -- Test
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 2, 150, null);
 
-UPDATE Venta
-SET subtotal = 700
-WHERE idFactura=3 and idProducto=2;
+UPDATE Venta SET subtotal = 700 WHERE idFactura=3 and idProducto=2;
 
 
 -- 5. El numeroDeSerie de la tabla Venta debe ser nulo a menos que el producto con el que se relacione sea un automóvil.
