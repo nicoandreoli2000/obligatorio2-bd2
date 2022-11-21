@@ -1,18 +1,3 @@
--- Originales
--- 1. Todo usuario registrado debe ser mayor a 18 años
--- 2. La factura debe tener el mismo codigoMedioPago que el de usuario que se relaciona con la factura
--- 3. Al realizar una venta de un producto se debe chequear que el mismo tenga stock suficiente 
--- 4. El atributo subtotal de la tabla Venta debe ser igual a la cantidad * precio del producto
--- 5. El numeroDeSerie de la tabla Venta debe ser nulo a menos que el producto con el que se relacione sea un automóvil.
--- 6. Solo un usuario que haya comprado un automóvil puede comprar vestimenta
-
--- Agregados por la correción
--- 7. Checkear que los mails del codigo de fact y el medio de pago sean iguales
--- 8. El registro en Venta para el caso de automóvil se debería asegurar que la cantidad = 1
-
---- DUDA: HAY QUE AGREGAR QEU EL TOTAL EN FACTURA SEA LA SUMA DE LOS SUBTOTALES??
-
-
 SET serveroutput ON;
 
 -- 1. Todo usuario registrado debe ser mayor a 18 años
@@ -53,7 +38,7 @@ BEGIN
     END IF;
 END;
 
--- test
+-- Test
 INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (7, 700, TO_DATE('17/10/2021', 'dd/mm/yyyy'), 'josemaria@gmail.com', '123456');
 
 UPDATE Factura
@@ -76,9 +61,8 @@ BEGIN
     END IF;
 END;
 
--- test
+-- Test
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 6, 500, null);
-
 
 
 -- 4. El atributo subtotal de la tabla Venta debe ser igual a la cantidad * precio del producto
@@ -97,7 +81,7 @@ BEGIN
     END IF;
 END;
 
--- test
+-- Test
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 2, 150, null);
 
 UPDATE Venta
@@ -105,9 +89,7 @@ SET subtotal = 700
 WHERE idFactura=3 and idProducto=2;
 
 
-
 -- 5. El numeroDeSerie de la tabla Venta debe ser nulo a menos que el producto con el que se relacione sea un automóvil.
-
 CREATE OR REPLACE TRIGGER VALIDAR_NUMERO_SERIE_AUTOMOVIL
 BEFORE INSERT OR UPDATE ON Venta
 FOR EACH ROW
@@ -125,30 +107,8 @@ BEGIN
     END IF;
 END;
 
--- test
+-- Test
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 1, 1, 100, null);
-
-
-CREATE OR REPLACE TRIGGER VALIDAR_NUMERO_SERIE_NO_AUTOMOVIL
-BEFORE INSERT OR UPDATE ON Venta
-FOR EACH ROW
-DECLARE
-     VNoEsAuto Number;
-BEGIN
-    SELECT COUNT(1) INTO VNoEsAuto 
-    FROM Producto P, PanelSolar PS, Vestimenta V
-    WHERE :NEW.idProducto= P.id
-    AND (P.id = PS.id 
-    OR P.id = V.id);
-    
-    IF VNoEsAuto > 0 and :NEW.numeroDeSerie IS NOT NULL THEN
-            RAISE_APPLICATION_ERROR(-20001, 'Las vestimentas o paneles solares no debe tener un numeros de serie') ;
-    END IF;
-END;
-
--- test
-INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 1, 100, 50);
-
 
 -- 6. Solo un usuario que haya comprado un automóvil puede comprar vestimenta
 
@@ -179,13 +139,52 @@ BEGIN
             RAISE_APPLICATION_ERROR(-20001, 'Es necesario haber comprado un automovil para poder comprar ropa') ;
     END IF;
 END;
+
 -- TEST
 INSERT INTO Usuario (email, nombre, apellido, fechaNacimiento, idMercado, fechaCreacion, telefonoRecuperarCuenta, emailRecuperarCuenta) VALUES ('andres@gmail.com', 'andres', 'María', TO_DATE('24/01/1950', 'dd/mm/yyyy'), 3, TO_DATE('24/01/2021', 'dd/mm/yyyy'), NULL, 'andres@gmail.com');
 INSERT INTO MedioPago (codigo, tipo, emailUsuario) VALUES ('123456789', 'CRYPTO', 'andres@gmail.com');
 INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (7, 500, TO_DATE('01/01/2022', 'dd/mm/yyyy'), 'andres@gmail.com', '123456789');
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (7, 3, 1, 100, null);
 
--- Pasa
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (7, 1, 1, 100, 15);
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (7, 3, 1, 100, null);
 
+
+-- 7. Checkear que los mails del codigo de fact y el medio de pago sean iguales
+CREATE OR REPLACE TRIGGER VALIDAR_NUMERO_SERIE_NO_AUTOMOVIL
+BEFORE INSERT OR UPDATE ON Venta
+FOR EACH ROW
+DECLARE
+     VNoEsAuto Number;
+BEGIN
+    SELECT COUNT(1) INTO VNoEsAuto 
+    FROM Producto P, PanelSolar PS, Vestimenta V
+    WHERE :NEW.idProducto= P.id
+    AND (P.id = PS.id 
+    OR P.id = V.id);
+    
+    IF VNoEsAuto > 0 and :NEW.numeroDeSerie IS NOT NULL THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Las vestimentas o paneles solares no debe tener un numeros de serie') ;
+    END IF;
+END;
+
+-- Test
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 1, 100, 50);
+
+
+-- 8. El registro en Venta para el caso de automóvil se debería asegurar que la cantidad = 1
+CREATE OR REPLACE TRIGGER VENTA_UNICA_AUTOMOVIL
+BEFORE INSERT OR UPDATE ON Venta
+FOR EACH ROW
+DECLARE
+     EsAutomovil Number;
+BEGIN
+    SELECT COUNT(1) INTO EsAutomovil 
+    FROM Producto P, Automovil A
+    WHERE :NEW.idProducto= P.id
+    AND P.id = A.id;
+    
+    IF EsAutomovil IS NOT NULL and :NEW.cantidad != 1 THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Solo se puede registrar una Venta de cantidad 1 para los automoviles') ;
+    END IF;
+END;

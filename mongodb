@@ -243,8 +243,6 @@ db.telemetria.find({ nSerie: "12345" });
 // Requerimiento 5
 // Proveer una consulta que retorne, para cada modelo, el promedio de temperatura, en orden decreciente.
 db.telemetria.aggregate([
-    {"$group":  { _id : '$modelo',
-                avgTemperatura: { $avg: "$temperatura" } } 
-    },
-    { $sort : { avgTemperatura : -1 }}
-])
+  { $group: { _id: "$modelo", avgTemperatura: { $avg: "$temperatura" } } },
+  { $sort: { avgTemperatura: -1 } },
+]);
