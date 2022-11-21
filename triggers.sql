@@ -194,3 +194,7 @@ BEGIN
             RAISE_APPLICATION_ERROR(-20001, 'Solo se puede registrar una Venta de cantidad 1 para los automoviles') ;
     END IF;
 END;
+
+-- Test
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 4, 2, 200, 50);
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 1, 3, 300, 50);
