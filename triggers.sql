@@ -89,6 +89,7 @@ BEFORE INSERT OR UPDATE ON Venta
 FOR EACH ROW
 DECLARE
     VEsAuto Number;
+    VNoEsAuto Number;
 BEGIN
     SELECT COUNT(1) INTO VEsAuto 
     FROM Producto P, Automovil A
@@ -99,17 +100,7 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20001, 'El automovil debe tener un numeros de serie'); 
     
     END IF;
-END;
 
--- Test
-INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 1, 1, 100, null);
-
-REATE OR REPLACE TRIGGER VALIDAR_NUMERO_SERIE_NO_AUTOMOVIL
-BEFORE INSERT OR UPDATE ON Venta
-FOR EACH ROW
-DECLARE
-     VNoEsAuto Number;
-BEGIN
     SELECT COUNT(1) INTO VNoEsAuto 
     FROM Producto P, PanelSolar PS, Vestimenta V
     WHERE :NEW.idProducto= P.id
@@ -121,7 +112,8 @@ BEGIN
     END IF;
 END;
 
--- test
+-- Test
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 1, 1, 100, null);
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 1, 100, 50);
 
 -- 6. Solo un usuario que haya comprado un automóvil puede comprar vestimenta
