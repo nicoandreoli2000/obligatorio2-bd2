@@ -104,6 +104,26 @@ END;
 -- Test
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 1, 1, 100, null);
 
+REATE OR REPLACE TRIGGER VALIDAR_NUMERO_SERIE_NO_AUTOMOVIL
+BEFORE INSERT OR UPDATE ON Venta
+FOR EACH ROW
+DECLARE
+     VNoEsAuto Number;
+BEGIN
+    SELECT COUNT(1) INTO VNoEsAuto 
+    FROM Producto P, PanelSolar PS, Vestimenta V
+    WHERE :NEW.idProducto= P.id
+    AND (P.id = PS.id 
+    OR P.id = V.id);
+    
+    IF VNoEsAuto > 0 and :NEW.numeroDeSerie IS NOT NULL THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Las vestimentas o paneles solares no debe tener un numeros de serie') ;
+    END IF;
+END;
+
+-- test
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 1, 100, 50);
+
 -- 6. Solo un usuario que haya comprado un automóvil puede comprar vestimenta
 
 CREATE OR REPLACE TRIGGER USUARIO_PUEDE_COMPRAR_ROPA
