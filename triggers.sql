@@ -157,25 +157,24 @@ INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VAL
 
 
 -- 7. Checkear que los mails del codigo de fact y el medio de pago sean iguales
-CREATE OR REPLACE TRIGGER VALIDAR_NUMERO_SERIE_NO_AUTOMOVIL
-BEFORE INSERT OR UPDATE ON Venta
+CREATE OR REPLACE TRIGGER VALIDAR_EMAIL_FACTURA_Y_MEDIO_PAGO_IGUALES
+BEFORE INSERT OR UPDATE ON Factura
 FOR EACH ROW
 DECLARE
-     VNoEsAuto Number;
+     VMedioPagoEmailUsuario Usuario.email%TYPE;
 BEGIN
-    SELECT COUNT(1) INTO VNoEsAuto 
-    FROM Producto P, PanelSolar PS, Vestimenta V
-    WHERE :NEW.idProducto= P.id
-    AND (P.id = PS.id 
-    OR P.id = V.id);
+    SELECT M.emailUsuario INTO VMedioPagoEmailUsuario 
+    FROM MedioPago M
+    WHERE :NEW.codigoMedioPago = M.codigo;
     
-    IF VNoEsAuto > 0 and :NEW.numeroDeSerie IS NOT NULL THEN
-            RAISE_APPLICATION_ERROR(-20001, 'Las vestimentas o paneles solares no debe tener un numeros de serie') ;
+    IF VMedioPagoEmailUsuario != :NEW.emailUsuario THEN
+            RAISE_APPLICATION_ERROR(-20001, 'El email del usuario de la factura ' ||  TO_CHAR(:NEW.emailUsuario) || ' no coincide con el del medio de pago de ese usuario ' || TO_CHAR(VMedioPagoEmailUsuario) ) ;
     END IF;
-END;
+END; 
 
--- Test
-INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 1, 100, 50);
+
+INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (6, 500, TO_DATE('01/01/2022', 'dd/mm/yyyy'), 'nicolasandreoli@gmail.com', 'ABCDEF');
+
 
 
 -- 8. El registro en Venta para el caso de automóvil se debería asegurar que la cantidad = 1
@@ -198,3 +197,6 @@ END;
 -- Test
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 4, 2, 200, 50);
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 1, 3, 300, 50);
+
+
+---> DUDA HAY QUE HACER UN TRIGGER QUE DESPUES DE INSERTAR UNA VENTA DESCUENTE LA CANTIDAD DE PRODUCTO COMPRADO DEL STOCK??

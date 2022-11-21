@@ -71,7 +71,7 @@ INSERT INTO Vestimenta (id, tipo, color, talle) VALUES (3, 'PANTALON', 'Azul', '
 INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (1, 700, TO_DATE('17/10/2021', 'dd/mm/yyyy'), 'josemaria@gmail.com', 'ABCDEF');
 INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (2, 500, TO_DATE('18/10/2021', 'dd/mm/yyyy'), 'nicolasandreoli@gmail.com', '123456');
 INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (3, 500, TO_DATE('18/10/2021', 'dd/mm/yyyy'), 'nicolasandreoli@gmail.com', '123456');
-INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (5, 500, TO_DATE('18/10/2021', 'dd/mm/yyyy'), 'josemaria@gmail.com', '123456');
+INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (5, 500, TO_DATE('18/10/2021', 'dd/mm/yyyy'), 'josemaria@gmail.com', 'ABCDEF');
 INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (6, 500, TO_DATE('01/01/2022', 'dd/mm/yyyy'), 'nicolasandreoli@gmail.com', '123456');
 
 -- Venta
