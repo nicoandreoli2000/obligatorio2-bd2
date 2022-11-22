@@ -45,7 +45,7 @@ const insertDataIntoMongo = async (data) => {
     try {
       if (err) throw err;
 
-      const dbo = db.db("mydb");
+      const dbo = db.db("admin");
 
       console.log(data);
       const rows = []; //See how data is being passed and make an object accordingly
