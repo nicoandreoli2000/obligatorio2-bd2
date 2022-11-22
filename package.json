@@ -1,0 +1,25 @@
+{
+  "name": "obligatorio2-bd2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicoandreoli2000/obligatorio2-bd2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nicoandreoli2000/obligatorio2-bd2/issues"
+  },
+  "homepage": "https://github.com/nicoandreoli2000/obligatorio2-bd2#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^4.12.0",
+    "node-oracledb": "^1.0.2",
+    "nodemon": "^2.0.20"
+  }
+}
