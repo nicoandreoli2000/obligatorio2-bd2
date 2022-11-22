@@ -8,7 +8,8 @@ BEGIN
     SELECT SUM(v.cantidad), SUM(f.total) INTO cantidadCompras, precioTotal
     FROM Factura f, Venta v
     WHERE f.emailUsuario = email
-    AND v.idFactura = f.id;
+    AND v.idFactura = f.id
+    AND f.fecha BETWEEN desde AND hasta;
 END;
 
 -- Test
