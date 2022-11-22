@@ -117,7 +117,6 @@ INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VAL
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 1, 100, 50);
 
 -- 6. Solo un usuario que haya comprado un automóvil puede comprar vestimenta
-
 CREATE OR REPLACE TRIGGER USUARIO_PUEDE_COMPRAR_ROPA
 BEFORE INSERT OR UPDATE ON Venta
 FOR EACH ROW
@@ -197,6 +196,3 @@ END;
 -- Test
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 4, 2, 200, 50);
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 1, 3, 300, 50);
-
-
----> DUDA HAY QUE HACER UN TRIGGER QUE DESPUES DE INSERTAR UNA VENTA DESCUENTE LA CANTIDAD DE PRODUCTO COMPRADO DEL STOCK??
