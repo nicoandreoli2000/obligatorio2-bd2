@@ -1,5 +1,12 @@
-const mongodb = require("mongodb");
 const oracledb = require("oracledb");
+const mongodb = require("mongodb").MongoClient;
+
+const ORACLE_CONNECTION = {
+  user: "",
+  password: "",
+  connectString: "",
+};
+const MONGO_URL = "";
 
 const run = async () => {
   const data = await getDataFromOracle();
@@ -10,11 +17,7 @@ const getDataFromOracle = async () => {
   let connection;
 
   try {
-    connection = await oracledb.getConnection({
-      user: "",
-      password: "",
-      connectString: "",
-    });
+    connection = await oracledb.getConnection(ORACLE_CONNECTION);
 
     const result = await connection.execute(
       `SELECT v.numeroDeSerie, a.modelo
@@ -38,8 +41,25 @@ const getDataFromOracle = async () => {
 };
 
 const insertDataIntoMongo = async (data) => {
-  //TODO
-  console.log(data);
+  mongodb.connect(MONGO_URL, function (err, db) {
+    try {
+      if (err) throw err;
+
+      const dbo = db.db("mydb");
+
+      console.log(data);
+      const rows = []; //See how data is being passed and make an object accordingly
+
+      rows.forEach((row) => {
+        dbo.collection("telemetria").insertOne(myobj, function (err, res) {
+          if (err) throw err;
+          db.close();
+        });
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  });
 };
 
 run();
