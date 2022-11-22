@@ -2,7 +2,7 @@
 -- Proveer un servicio que, dado un rango de fechas y un usuario, retorne la cantidad de compras realizadas por el
 -- usuario y el monto total para el periodo.
 
-
+-- Decidimos hacer cantidad de facturas (recibos) y no cantidad de vantas (articulos) en cada compra. 
 CREATE OR REPLACE PROCEDURE REQUERIMIENTO_1(emailUsuario IN Usuario.email%TYPE, desde IN DATE, hasta IN DATE, cantidadCompras OUT NUMBER, precioTOtal OUT Producto.precio%TYPE) AS
 BEGIN
     SELECT SUM(v.cantidad), SUM(f.total) INTO cantidadCompras, precioTotal
@@ -40,3 +40,9 @@ END;
 -- Test
 -- TODO
 
+
+
+
+-- 3 
+-- Crear tabla pedido, actualizar stock producto y despues commit
+-- En la tabla producto agregar stock minimo
