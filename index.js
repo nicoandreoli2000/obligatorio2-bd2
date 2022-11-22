@@ -41,7 +41,7 @@ const getDataFromOracle = async () => {
 };
 
 const insertDataIntoMongo = async (data) => {
-  mongodb.connect(MONGO_URL, function (err, db) {
+  mongodb.connect(MONGO_URL, (err, db) => {
     try {
       if (err) throw err;
 
@@ -51,7 +51,7 @@ const insertDataIntoMongo = async (data) => {
       const rows = []; //See how data is being passed and make an object accordingly
 
       rows.forEach((row) => {
-        dbo.collection("telemetria").insertOne(myobj, function (err, res) {
+        dbo.collection("telemetria").insertOne(myobj, (err, res) => {
           if (err) throw err;
           db.close();
         });
