@@ -2,20 +2,13 @@
 -- Proveer un servicio que, dado un rango de fechas y un usuario, retorne la cantidad de compras realizadas por el
 -- usuario y el monto total para el periodo.
 
-CREATE OR REPLACE TYPE TIPO_RETURN_REQUERIMIENTO_1 AS OBJECT(cantidad NUMBER, total Producto.precio%TYPE);
 
-CREATE OR REPLACE FUNCTION REQUERIMIENTO_1(emailUsuario Usuario.email%TYPE, desde DATE, hasa DATE)
-RETURN TIPO_RETURN_REQUERIMIENTO_1 AS
-    CANTIDAD_COMPRAS NUMBER;
-    PRECIO_TOTAL Producto.precio%TYPE;
+CREATE OR REPLACE PROCEDURE REQUERIMIENTO_1(emailUsuario IN Usuario.email%TYPE, desde IN DATE, hasta IN DATE, cantidadCompras OUT NUMBER, precioTOtal OUT Producto.precio%TYPE) AS
 BEGIN
-    SELECT SUM(v.cantidad), SUM(f.total) INTO CANTIDAD_COMPRAS, PRECIO_TOTAL
+    SELECT SUM(v.cantidad), SUM(f.total) INTO cantidadCompras, precioTotal
     FROM Factura f, Venta v
     WHERE f.emailUsuario = email
     AND v.idFactura = f.id;
-    
-
-    RETURN new TIPO_RETURN_REQUERIMIENTO_1(CANTIDAD_COMPRAS, PRECIO_TOTAL);
 END;
 
 -- Test
@@ -26,8 +19,7 @@ END;
 -- el caso específico de los vehículos, interesa agrupar por modelo. Para el resto de los productos interesa
 -- agruparlo por tipo.
 
--- CREATE OR REPLACE FUNCTION REQUERIMIENTO_2(...)
--- RETURN ... AS
+-- CREATE OR REPLACE PROCEDURE REQUERIMIENTO_2(...) AS
 -- BEGIN
 -- END;
 
