@@ -4,7 +4,7 @@
 
 -- Decidimos hacer cantidad de facturas (recibos) y no cantidad de ventas (articulos) en cada compra. 
 CREATE OR REPLACE PROCEDURE GetCompras(usuario IN Usuario.email%TYPE, desde IN Factura.fecha%TYPE, hasta IN Factura.fecha%TYPE, 
-        numCompras OUT Number, montoTotal OUT Number) AS
+        numCompras OUT Number, montoTotal OUT Producto.precio%TYPE) AS
 BEGIN
      SELECT COUNT(*), SUM(F.total) into numCompras, montoTotal
      FROM Factura F
@@ -14,7 +14,7 @@ END;
 
 
      
-     
+-- Test
 SET serveroutput ON;
 DECLARE 
     VUserEmail Usuario.email%TYPE := 'nicolasandreoli@gmail.com';
@@ -29,9 +29,6 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Monto total: ' || TO_CHAR(montoTotal));
 END;
 
-
--- Test
--- TODO
 
 -- Requerimiento 2
 -- Proveer un servicio que reciba por parámetro una cantidad X y retorne el top X de productos más vendidos. Para
@@ -81,13 +78,6 @@ BEGIN
     topXProductosCant(VCantidadVendidos);
 END;
 
--- CREATE OR REPLACE PROCEDURE REQUERIMIENTO_2(...) AS
--- BEGIN
--- END;
-
--- Test
--- TODO
-
 
 
 -- Requerimiento 3
@@ -99,20 +89,51 @@ END;
 ALTER TABLE Producto
 ADD minimoStock NUMBER;
 
+-- el minimos de stock es 10 para cada producto
 UPDATE Producto SET minimoStock = 10;
 
+-- creo la tabla de pedidos
+CREATE TABLE Pedidos (
+    fecha DATE,
+    idProducto NUMBER(10),
+    catidadSolicitada NUMBER(5),
+    PRIMARY KEY (fecha, idProducto),
+    FOREIGN KEY (idProducto) REFERENCES Producto (id)
+);
 
 
--- CREATE OR REPLACE FUNCTION PROCEDURE(...) AS
--- BEGIN
--- END;
+CREATE OR REPLACE PROCEDURE pedirStock AS
+    dia DATE; 
+    CURSOR cursorProductos is 
+        SELECT id, stock, minimoStock
+        FROM Producto;
+    productoYaProcesado NUMBER;
+    cantidadSolicitada Pedidos.catidadSolicitada%TYPE;
+BEGIN     
+    dia := SYSDATE;
+    DBMS_OUTPUT.PUT_LINE(TO_CHAR(dia));
+    FOR registro IN cursorProductos LOOP
+        -- chequeo si ya procese el producto
+        SELECT COUNT(*) INTO productoYaProcesado
+        FROM Pedidos P
+        WHERE P.idProducto = registro.id
+        AND TO_CHAR(P.fecha, 'DD Month YYYY') = TO_CHAR(dia, 'DD Month YYYY');
+        
+        IF productoYaProcesado = 0 THEN
+            cantidadSolicitada := registro.minimoStock - registro.stock;
+            IF cantidadSolicitada > 0 THEN
+                INSERT INTO Pedidos (fecha, idProducto, catidadSolicitada) VALUES (dia, registro.id, cantidadSolicitada + 1);
+                UPDATE Producto P 
+                    SET P.stock = cantidadSolicitada + 1 + P.stock 
+                    WHERE P.id = registro.id;
+                COMMIT; 
+                DBMS_OUTPUT.PUT_LINE('Actualizo el producto ' || TO_CHAR(registro.id));
+            END IF;
+        END IF;   
+     END LOOP;
+     EXCEPTION
+        WHEN OTHERS THEN 
+        ROLLBACK;
+END;
 
--- Test
--- TODO
 
-
-
-
--- 3 
--- Crear tabla pedido, actualizar stock producto y despues commit
--- En la tabla producto agregar stock minimo
