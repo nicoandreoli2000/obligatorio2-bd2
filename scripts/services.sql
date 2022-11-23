@@ -38,6 +38,49 @@ END;
 -- el caso específico de los vehículos, interesa agrupar por modelo. Para el resto de los productos interesa
 -- agruparlo por tipo.
 
+CREATE OR REPLACE PROCEDURE topXProductosCant(VCantidadVendidos IN Number) AS
+    CURSOR cur_topX is SELECT *
+    FROM (SELECT 'Panel Solar' AS nombreProducto, sum(V.cantidad) AS cantidad
+        FROM Venta V, Producto P, PanelSolar PS
+        WHERE V.idProducto = P.id
+        AND P.id = PS.id 
+        UNION
+        SELECT 'Vestimenta' AS nombreProducto, sum(V.cantidad) AS cantidad
+        FROM Venta V, Producto P, Vestimenta Vest
+        WHERE V.idProducto = P.id
+        AND P.id = Vest.id    
+        UNION
+        SELECT A.modelo AS nombreProducto, sum(V.cantidad) AS cantidad 
+        FROM Venta V, Producto P, Automovil A
+        WHERE V.idProducto = P.id
+        AND P.id = A.id
+        GROUP BY A.modelo)
+    ORDER BY cantidad DESC
+    FETCH FIRST VCantidadVendidos ROWS ONLY;
+BEGIN 
+    DBMS_OUTPUT.PUT_LINE('El top ' || TO_CHAR(VCantidadVendidos) || ' de productos mas vendidos es: ');
+    FOR registro IN cur_topX LOOP
+         DBMS_OUTPUT.PUT_LINE('Producto ' || TO_CHAR(registro.nombreProducto) || ' se vendieron ' || TO_CHAR(registro.cantidad) || ' unidades' );
+
+    END LOOP;
+END;
+
+
+-- Test
+SET serveroutput ON;
+DECLARE 
+    VCantidadVendidos NUMBER := 3;
+BEGIN
+    topXProductosCant(VCantidadVendidos);
+END;
+
+SET serveroutput ON;
+DECLARE 
+    VCantidadVendidos NUMBER := 2;
+BEGIN
+    topXProductosCant(VCantidadVendidos);
+END;
+
 -- CREATE OR REPLACE PROCEDURE REQUERIMIENTO_2(...) AS
 -- BEGIN
 -- END;
