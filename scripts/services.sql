@@ -11,8 +11,6 @@ BEGIN
      WHERE f.emailUsuario = usuario
      AND f.fecha BETWEEN desde AND hasta;
 END;
-
-
      
 -- Test
 SET serveroutput ON;
@@ -36,18 +34,18 @@ END;
 -- agruparlo por tipo.
 
 CREATE OR REPLACE PROCEDURE topXProductosCant(VCantidadVendidos IN Number) AS
-    CURSOR cur_topX is SELECT *
-    FROM (SELECT 'Panel Solar' AS nombreProducto, sum(V.cantidad) AS cantidad
+    CURSOR cur_topX IS SELECT *
+    FROM (SELECT 'Panel Solar' AS nombreProducto, SUM(V.cantidad) AS cantidad
         FROM Venta V, Producto P, PanelSolar PS
         WHERE V.idProducto = P.id
         AND P.id = PS.id 
         UNION
-        SELECT 'Vestimenta' AS nombreProducto, sum(V.cantidad) AS cantidad
+        SELECT 'Vestimenta' AS nombreProducto, SUM(V.cantidad) AS cantidad
         FROM Venta V, Producto P, Vestimenta Vest
         WHERE V.idProducto = P.id
         AND P.id = Vest.id    
         UNION
-        SELECT A.modelo AS nombreProducto, sum(V.cantidad) AS cantidad 
+        SELECT A.modelo AS nombreProducto, SUM(V.cantidad) AS cantidad 
         FROM Venta V, Producto P, Automovil A
         WHERE V.idProducto = P.id
         AND P.id = A.id
