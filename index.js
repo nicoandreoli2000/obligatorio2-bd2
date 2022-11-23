@@ -11,7 +11,6 @@ const DB_MONGO = "test";
 
 const run = async () => {
   let data = await getDataFromOracle();
-  console.log(data)
   await insertDataIntoMongo(data);
 };
 
@@ -25,7 +24,7 @@ const getDataFromOracle = async () => {
        FROM Producto p, Venta v, Automovil a
        WHERE p.id = a.id
        AND v.idProducto = p.id`
-    ); 
+    );
 
     return result.rows;
   } catch (err) {
@@ -48,10 +47,11 @@ const insertDataIntoMongo = async (data) => {
 
       const dbo = db.db(DB_MONGO);
 
-      console.log(data);
-      const rows = []; //See how data is being passed and make an object accordingly
+      const rows = data.map((row) => ({
+        nSerie: row.numeroDeSerie,
+        modelo: row.modelo,
+      }));
 
-      
       dbo.collection("telemetria").insertMany(rows, (err, res) => {
         if (err) throw err;
         db.close();
