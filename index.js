@@ -2,14 +2,16 @@ const oracledb = require("oracledb");
 const mongodb = require("mongodb").MongoClient;
 
 const ORACLE_CONNECTION = {
-  user: "",
-  password: "",
-  connectString: "",
+  user: "andres",
+  password: "2907",
+  connectString: "localhost:1521/xe",
 };
-const MONGO_URL = "";
+const MONGO_URL = "mongodb://localhost:27017";
+const DB_MONGO = "test";
 
 const run = async () => {
-  const data = await getDataFromOracle();
+  let data = await getDataFromOracle();
+  console.log(data)
   await insertDataIntoMongo(data);
 };
 
@@ -18,13 +20,12 @@ const getDataFromOracle = async () => {
 
   try {
     connection = await oracledb.getConnection(ORACLE_CONNECTION);
-
     const result = await connection.execute(
       `SELECT v.numeroDeSerie, a.modelo
        FROM Producto p, Venta v, Automovil a
        WHERE p.id = a.id
-       AND f.idProducto = p.id;`
-    );
+       AND v.idProducto = p.id`
+    ); 
 
     return result.rows;
   } catch (err) {
@@ -45,16 +46,15 @@ const insertDataIntoMongo = async (data) => {
     try {
       if (err) throw err;
 
-      const dbo = db.db("admin");
+      const dbo = db.db(DB_MONGO);
 
       console.log(data);
       const rows = []; //See how data is being passed and make an object accordingly
 
-      rows.forEach((row) => {
-        dbo.collection("telemetria").insertOne(myobj, (err, res) => {
-          if (err) throw err;
-          db.close();
-        });
+      
+      dbo.collection("telemetria").insertMany(rows, (err, res) => {
+        if (err) throw err;
+        db.close();
       });
     } catch (err) {
       console.log(err);
