@@ -212,7 +212,19 @@ END;
 -- TEST
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 3, 3, 300, null);
 
--- HACER UNO PARA BORRAR Y PARA UPDATE
+
+CREATE OR REPLACE TRIGGER ACTUALIZAR_STOCK_WHEN_DELETE_VENTA
+AFTER DELETE ON Venta
+FOR EACH ROW
+DECLARE
+BEGIN
+    UPDATE Producto P 
+    SET P.stock = P.stock + :OLD.cantidad 
+    WHERE P.id = :OLD.idProducto;
+END;
+
+
+-- HACER UNO PARA UPDATE -> no lo puedo probar nose porque. 
 
 CREATE OR REPLACE TRIGGER ACTUALIZAR_STOCK_UPDATE
 AFTER UPDATE ON Venta
@@ -224,14 +236,5 @@ BEGIN
     WHERE P.id = :NEW.idProducto;
 END;
 
-CREATE OR REPLACE TRIGGER ACTUALIZAR_STOCK_WHEN_DELETE_VENTA
-AFTER DELETE ON Venta
-FOR EACH ROW
-DECLARE
-BEGIN
-    UPDATE Producto P 
-    SET P.stock = P.stock + :OLD.cantidad 
-    WHERE P.id = :NEW.idProducto;
-END;
 
 -- EN LOS REQUERIMIENTO MANEJAR EXCEPCIONES

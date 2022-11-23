@@ -95,6 +95,14 @@ END;
 -- a su stock mínimo. Dicho pedido debe quedar almacenado en la base de datos y debe incluir el producto, la
 -- fecha y la cantidad a solicitar (cantidad necesaria para superar el stock mínimo).
 
+
+ALTER TABLE Producto
+ADD minimoStock NUMBER;
+
+UPDATE Producto SET minimoStock = 10;
+
+
+
 -- CREATE OR REPLACE FUNCTION PROCEDURE(...) AS
 -- BEGIN
 -- END;
