@@ -43,7 +43,7 @@ UPDATE Factura SET codigoMedioPago = '123456' WHERE id=1;
 
 -- 3. Al realizar una venta de un producto se debe chequear que el mismo tenga stock suficiente 
 CREATE OR REPLACE TRIGGER VALIDAR_STOCK
-BEFORE INSERT OR UPDATE ON Venta
+BEFORE INSERT ON Venta
 FOR EACH ROW
 DECLARE
     VProductoStock Producto.stock%TYPE;
@@ -58,8 +58,9 @@ BEGIN
 END;
 
 -- Test
-INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 6, 500, null);
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 6, 600, null);
 
+-- HACER UN TRIGGER PARA UPDATE
 
 -- 4. El atributo subtotal de la tabla Venta debe ser igual a la cantidad * precio del producto
 CREATE OR REPLACE TRIGGER VALIDAR_SUBTOTAL
@@ -188,7 +189,7 @@ BEGIN
     WHERE :NEW.idProducto= P.id
     AND P.id = A.id;
     
-    IF EsAutomovil IS NOT NULL and :NEW.cantidad != 1 THEN
+    IF EsAutomovil > 0 and :NEW.cantidad != 1 THEN
             RAISE_APPLICATION_ERROR(-20001, 'Solo se puede registrar una Venta de cantidad 1 para los automoviles') ;
     END IF;
 END;
@@ -198,6 +199,20 @@ INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VAL
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 1, 3, 300, 50);
 
 -- trigger para actualizar stock
+CREATE OR REPLACE TRIGGER ACTUALIZAR_STOCK
+AFTER INSERT ON Venta
+FOR EACH ROW
+DECLARE
+BEGIN
+    UPDATE Producto P 
+    SET P.stock = P.stock - :NEW.cantidad 
+    WHERE P.id = :NEW.idProducto;
+    DBMS_OUTPUT.PUT_LINE('UPDATE: ');
+END;
 
+-- TEST
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 3, 3, 300, null);
+
+-- HACER UNO PARA BORRAR Y PARA UPDATE
 
 -- EN LOS REQUERIMIENTO MANEJAR EXCEPCIONES

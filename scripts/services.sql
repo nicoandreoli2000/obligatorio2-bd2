@@ -2,15 +2,33 @@
 -- Proveer un servicio que, dado un rango de fechas y un usuario, retorne la cantidad de compras realizadas por el
 -- usuario y el monto total para el periodo.
 
--- Decidimos hacer cantidad de facturas (recibos) y no cantidad de vantas (articulos) en cada compra. 
-CREATE OR REPLACE PROCEDURE REQUERIMIENTO_1(emailUsuario IN Usuario.email%TYPE, desde IN DATE, hasta IN DATE, cantidadCompras OUT NUMBER, precioTOtal OUT Producto.precio%TYPE) AS
+-- Decidimos hacer cantidad de facturas (recibos) y no cantidad de ventas (articulos) en cada compra. 
+CREATE OR REPLACE PROCEDURE GetCompras(usuario IN Usuario.email%TYPE, desde IN Factura.fecha%TYPE, hasta IN Factura.fecha%TYPE, 
+        numCompras OUT Number, montoTotal OUT Number) AS
 BEGIN
-    SELECT SUM(v.cantidad), SUM(f.total) INTO cantidadCompras, precioTotal
-    FROM Factura f, Venta v
-    WHERE f.emailUsuario = email
-    AND v.idFactura = f.id
-    AND f.fecha BETWEEN desde AND hasta;
+     SELECT COUNT(*), SUM(F.total) into numCompras, montoTotal
+     FROM Factura F
+     WHERE f.emailUsuario = usuario
+     AND f.fecha BETWEEN desde AND hasta;
 END;
+
+
+     
+     
+SET serveroutput ON;
+DECLARE 
+    VUserEmail Usuario.email%TYPE := 'nicolasandreoli@gmail.com';
+    VDesde DATE := TO_DATE('17/10/2021', 'dd/mm/yyyy');
+    VHasta DATE := TO_DATE('19/10/2021', 'dd/mm/yyyy');
+    numCompras NUMBER; 
+    montoTotal NUMBER;
+BEGIN
+    GetCompras(VUserEmail, VDesde, VHasta, numCompras, montoTotal);
+    DBMS_OUTPUT.PUT_LINE('El usuario con email ' || TO_CHAR(VUserEmail) || ' entre las fechas ' || TO_CHAR(VDesde) || ' y ' ||  TO_CHAR(VHasta) || ' realizo ' || TO_CHAR(numCompras) || ' compras y gasto un monto total de ' || TO_CHAR(montoTotal) || ' pesos');
+    DBMS_OUTPUT.PUT_LINE('Numero de compras: ' || TO_CHAR(numCompras));
+    DBMS_OUTPUT.PUT_LINE('Monto total: ' || TO_CHAR(montoTotal));
+END;
+
 
 -- Test
 -- TODO
