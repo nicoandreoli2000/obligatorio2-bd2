@@ -60,7 +60,6 @@ END;
 -- Test
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 6, 600, null);
 
--- HACER UN TRIGGER PARA UPDATE
 
 -- 4. El atributo subtotal de la tabla Venta debe ser igual a la cantidad * precio del producto
 CREATE OR REPLACE TRIGGER VALIDAR_SUBTOTAL
@@ -198,7 +197,7 @@ END;
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 4, 2, 200, 50);
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 1, 3, 300, 50);
 
--- trigger para actualizar stock
+-- Trigger para actualizar stock
 CREATE OR REPLACE TRIGGER ACTUALIZAR_STOCK
 AFTER INSERT ON Venta
 FOR EACH ROW
@@ -223,18 +222,5 @@ BEGIN
     WHERE P.id = :OLD.idProducto;
 END;
 
-
--- HACER UNO PARA UPDATE -> no lo puedo probar nose porque. 
-
-CREATE OR REPLACE TRIGGER ACTUALIZAR_STOCK_UPDATE
-AFTER UPDATE ON Venta
-FOR EACH ROW
-DECLARE
-BEGIN
-    UPDATE Producto P 
-    SET P.stock = P.stock - :NEW.cantidad + :OLD.cantidad
-    WHERE P.id = :NEW.idProducto;
-END;
-
-
--- EN LOS REQUERIMIENTO MANEJAR EXCEPCIONES
+-- TEST
+DELETE FROM VENTA WHERE idProducto = 7 AND idFactura = 6; 
