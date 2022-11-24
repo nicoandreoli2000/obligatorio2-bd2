@@ -78,7 +78,7 @@ INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (6,
 -- OK
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (1, 1, 1, 100, 24);
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (1, 2, 2, 200, NULL);
-INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (2, 3, 1, 100, NULL);
+INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (2, 3, 3, 300, NULL);
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 4, 1, 1000, 59);
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (5, 4, 1, 1000, 60);
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (6, 7, 1, 1000, 62);

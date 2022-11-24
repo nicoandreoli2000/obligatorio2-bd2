@@ -10,6 +10,10 @@ BEGIN
      FROM Factura F
      WHERE f.emailUsuario = usuario
      AND f.fecha BETWEEN desde AND hasta;
+     
+     IF montoTotal = NULL THEN
+        montoTotal := 0;
+     END IF;
 END;
      
 -- Test
@@ -27,6 +31,48 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Monto total: ' || TO_CHAR(montoTotal));
 END;
 
+-- Test si la fecha de hasta coincide con la de desde 
+DECLARE 
+    VUserEmail Usuario.email%TYPE := 'nicolasandreoli@gmail.com';
+    VDesde DATE := TO_DATE('18/10/2021', 'dd/mm/yyyy');
+    VHasta DATE := TO_DATE('18/10/2021', 'dd/mm/yyyy');
+    numCompras NUMBER; 
+    montoTotal NUMBER;
+BEGIN
+    GetCompras(VUserEmail, VDesde, VHasta, numCompras, montoTotal);
+    DBMS_OUTPUT.PUT_LINE('El usuario con email ' || TO_CHAR(VUserEmail) || ' entre las fechas ' || TO_CHAR(VDesde) || ' y ' ||  TO_CHAR(VHasta) || ' realizo ' || TO_CHAR(numCompras) || ' compras y gasto un monto total de ' || TO_CHAR(montoTotal) || ' pesos');
+    DBMS_OUTPUT.PUT_LINE('Numero de compras: ' || TO_CHAR(numCompras));
+    DBMS_OUTPUT.PUT_LINE('Monto total: ' || TO_CHAR(montoTotal));
+END;
+
+-- Test si la fecha de desde es posterior a la de hasta:
+DECLARE 
+    VUserEmail Usuario.email%TYPE := 'nicolasandreoli@gmail.com';
+    VDesde DATE := TO_DATE('18/10/2021', 'dd/mm/yyyy');
+    VHasta DATE := TO_DATE('10/10/2021', 'dd/mm/yyyy');
+    numCompras NUMBER; 
+    montoTotal NUMBER;
+BEGIN
+    GetCompras(VUserEmail, VDesde, VHasta, numCompras, montoTotal);
+    DBMS_OUTPUT.PUT_LINE('El usuario con email ' || TO_CHAR(VUserEmail) || ' entre las fechas ' || TO_CHAR(VDesde) || ' y ' ||  TO_CHAR(VHasta) || ' realizo ' || TO_CHAR(numCompras) || ' compras y gasto un monto total de ' || TO_CHAR(montoTotal) || ' pesos');
+    DBMS_OUTPUT.PUT_LINE('Numero de compras: ' || TO_CHAR(numCompras));
+    DBMS_OUTPUT.PUT_LINE('Monto total: ' || TO_CHAR(montoTotal));
+END;
+
+
+-- test con usuario no existente 
+DECLARE 
+    VUserEmail Usuario.email%TYPE := 'usuarioNoExistente@gmail.com';
+    VDesde DATE := TO_DATE('11/10/2021', 'dd/mm/yyyy');
+    VHasta DATE := TO_DATE('19/10/2021', 'dd/mm/yyyy');
+    numCompras NUMBER; 
+    montoTotal NUMBER;
+BEGIN
+    GetCompras(VUserEmail, VDesde, VHasta, numCompras, montoTotal);
+    DBMS_OUTPUT.PUT_LINE('El usuario con email ' || TO_CHAR(VUserEmail) || ' entre las fechas ' || TO_CHAR(VDesde) || ' y ' ||  TO_CHAR(VHasta) || ' realizo ' || TO_CHAR(numCompras) || ' compras y gasto un monto total de ' || TO_CHAR(montoTotal) || ' pesos');
+    DBMS_OUTPUT.PUT_LINE('Numero de compras: ' || TO_CHAR(numCompras));
+    DBMS_OUTPUT.PUT_LINE('Monto total: ' || TO_CHAR(montoTotal));
+END;
 
 -- Requerimiento 2
 -- Proveer un servicio que reciba por parámetro una cantidad X y retorne el top X de productos más vendidos. Para
@@ -87,8 +133,8 @@ END;
 ALTER TABLE Producto
 ADD minimoStock NUMBER;
 
--- el minimos de stock es 10 para cada producto
-UPDATE Producto SET minimoStock = 10;
+-- el minimos de stock es 12 para cada producto
+UPDATE Producto SET minimoStock = 12;
 
 -- creo la tabla de pedidos
 CREATE TABLE Pedidos (
