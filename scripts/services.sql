@@ -11,9 +11,6 @@ BEGIN
      WHERE f.emailUsuario = usuario
      AND f.fecha BETWEEN desde AND hasta;
      
-     IF montoTotal = NULL THEN
-        montoTotal := 0;
-     END IF;
 END;
      
 -- Test
