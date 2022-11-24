@@ -14,7 +14,7 @@ BEGIN
     END IF;
 END;
 
--- Test 
+-- Test (Usuarios menores a 18 años)
 INSERT INTO Usuario (email, nombre, apellido, fechaNacimiento, idMercado, fechaCreacion, telefonoRecuperarCuenta, emailRecuperarCuenta) VALUES ('nicolasandreoli2@gmail.com', 'Nicolás2', 'Andreoli2', TO_DATE('24/01/2020', 'dd/mm/yyyy'), 1, TO_DATE('24/01/2020', 'dd/mm/yyyy'), 0991234567, NULL);
 INSERT INTO Usuario (email, nombre, apellido, fechaNacimiento, idMercado, fechaCreacion, telefonoRecuperarCuenta, emailRecuperarCuenta) VALUES ('nicolasandreoli2@gmail.com', 'Nicolás2', 'Andreoli2', TO_DATE('24/12/2004', 'dd/mm/yyyy'), 1, TO_DATE('24/01/2020', 'dd/mm/yyyy'), 0991234567, NULL);
 
@@ -36,7 +36,7 @@ BEGIN
     END IF;
 END;
 
--- Test
+-- Test (No tiene el mismo medioPago)
 INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (7, 700, TO_DATE('17/10/2021', 'dd/mm/yyyy'), 'josemaria@gmail.com', '123456');
 
 UPDATE Factura SET codigoMedioPago = '123456' WHERE id=1;
@@ -57,7 +57,7 @@ BEGIN
     END IF;
 END;
 
--- Test
+-- Test (No hay suficiente stock)
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 6, 600, null);
 
 
@@ -77,7 +77,7 @@ BEGIN
     END IF;
 END;
 
--- Test
+-- Test (subtotal distinto a cantidad * precio del producto)
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 2, 150, null);
 
 UPDATE Venta SET subtotal = 700 WHERE idFactura=3 and idProducto=2;
@@ -113,7 +113,9 @@ BEGIN
 END;
 
 -- Test
+-- Automovil con numeroDeSerie null
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 1, 1, 100, null);
+-- panel con numeroDeSerie distito de null
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 2, 1, 100, 50);
 
 -- 6. Solo un usuario que haya comprado un automóvil puede comprar vestimenta
@@ -146,11 +148,14 @@ BEGIN
 END;
 
 -- TEST
+-- Creo usuario nuevo y factura nueva
 INSERT INTO Usuario (email, nombre, apellido, fechaNacimiento, idMercado, fechaCreacion, telefonoRecuperarCuenta, emailRecuperarCuenta) VALUES ('andres@gmail.com', 'andres', 'María', TO_DATE('24/01/1950', 'dd/mm/yyyy'), 3, TO_DATE('24/01/2021', 'dd/mm/yyyy'), NULL, 'andres@gmail.com');
 INSERT INTO MedioPago (codigo, tipo, emailUsuario) VALUES ('123456789', 'CRYPTO', 'andres@gmail.com');
 INSERT INTO Factura (id, total, fecha, emailusuario, codigoMedioPago) VALUES (7, 500, TO_DATE('01/01/2022', 'dd/mm/yyyy'), 'andres@gmail.com', '123456789');
+-- trata de comprar vestimenta y no puede 
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (7, 3, 1, 100, null);
 
+-- Compra un automovil y ahora si puede comprar vestimenta
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (7, 1, 1, 100, 15);
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (7, 3, 1, 100, null);
 
@@ -193,7 +198,7 @@ BEGIN
     END IF;
 END;
 
--- Test
+-- Test (automoviles con cantidad distinta de 1)
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 4, 2, 200, 50);
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 1, 3, 300, 50);
 
@@ -208,7 +213,7 @@ BEGIN
     WHERE P.id = :NEW.idProducto;
 END;
 
--- TEST
+-- TEST (se agrega una venta con cantidad 3 del producto con id 3, entonces se debe disminuir el stock en 3 de ese producto)
 INSERT INTO Venta (idFactura, idProducto, cantidad, subtotal, numeroDeSerie) VALUES (3, 3, 3, 300, null);
 
 
@@ -222,5 +227,5 @@ BEGIN
     WHERE P.id = :OLD.idProducto;
 END;
 
--- TEST
+-- TEST (se elimina una venta)
 DELETE FROM VENTA WHERE idProducto = 7 AND idFactura = 6; 
